@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">OTA Link</string>
+    <string name="ota_update_url">OTA Update Link</string>
+    <string name="hint">Long press the link for more actions like copy, share etc.</string>
+</resources>
