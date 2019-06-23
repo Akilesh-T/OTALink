@@ -43,6 +43,7 @@ import androidx.core.app.NotificationCompat
 @SuppressLint("SdCardPath")
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: TextView
+    private lateinit var hintText: TextView
     private lateinit var url: String
     private lateinit var cmd: String
 
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         decorView.systemUiVisibility = FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 
         textView = findViewById(R.id.url)
+        hintText = findViewById(R.id.hint)
 
         if(File(dataFile).exists()) {
             cmd = "cat $dataFile"
@@ -98,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                 if (matchResult != null) {
                     textView.setTextIsSelectable(true)
                     textView.text = String.format("%s", result)
+                    hintText.text = String.format("%s", resources.getString(R.string.hint))
                 } else
                     textView.text = String.format("%s", "No updates available.")
             }
