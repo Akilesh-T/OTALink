@@ -2,4 +2,9 @@
     <string name="app_name">OTA Link</string>
     <string name="ota_update_url">OTA Update Link</string>
     <string name="hint">Long press the link for more actions like copy, share etc.</string>
+    <string name="exit">Exit</string>
+    <string name="no_root_access_title">Unable to get root access</string>
+    <string name="no_root_access_message">Please ensure that your device is rooted and this app has been granted root access</string>
+    <string name="check">Check for update</string>
+    <string name="no_update_available">No update available</string>
 </resources>
