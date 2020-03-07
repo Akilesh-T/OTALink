@@ -4,7 +4,10 @@
     <string name="hint">Long press the link for more actions like copy, share etc.</string>
     <string name="exit">Exit</string>
     <string name="no_root_access_title">Unable to get root access</string>
-    <string name="no_root_access_message">Please ensure that your device is rooted and this app has been granted root access</string>
     <string name="check">Check for update</string>
     <string name="no_update_available">No update available</string>
+    <string name="grant_permission_message">%1$s requires permission to read logs. Connect your device to a computer with Android platform tools installed and run the following command (needs to be done only once):
+        \n\n%2$s</string>
+    <string name="copy_command">Copy command</string>
+    <string name="command_copied">command copied</string>
 </resources>

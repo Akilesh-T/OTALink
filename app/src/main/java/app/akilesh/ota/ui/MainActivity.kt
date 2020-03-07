@@ -5,12 +5,14 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
-import app.akilesh.ota.R
 import app.akilesh.ota.databinding.ActivityMainBinding
+import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
@@ -18,14 +20,13 @@ import java.io.File
 import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
-    private var filePath = "/data" + "/data/com.google.android.gms/shared_prefs/com.google.android.gms.update.storage.xml"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val linkTextView = binding.include.link
 
         val decorView = window.decorView
         decorView.systemUiVisibility = FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
@@ -37,9 +38,42 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val updateIntent = Intent(Intent.ACTION_MAIN)
+        updateIntent.setClassName("com.google.android.gms","com.google.android.gms.update.SystemUpdateActivity")
+        if (isCallable(updateIntent)) {
+            binding.include.check.setOnClickListener {
+                startActivity(updateIntent)
+            }
+        }
+        else binding.include.check.visibility = View.GONE
+
+        val isRoot = intent.getBooleanExtra("$packageName.isRoot", false)
+        Log.d("isRoot", isRoot.toString())
+        if (isRoot) readFromGMS()
+        else readFromLogcat()
+
+    }
+
+    private fun readFromLogcat() {
+        val shell = Shell.newInstance()
+        val callbackList =
+            object : CallbackList<String>() {
+                @MainThread
+                override fun onAddElement(log: String) {
+                    val result = Patterns.WEB_URL.toRegex().find(log)
+                    if (result != null && result.value.contains("packages/ota-api")) {
+                        postLink(result.value)
+                        shell.close()
+                    }
+                }
+            }
+        shell.newJob().add("logcat").to(callbackList).submit()
+    }
+
+    private fun readFromGMS() {
+        val filePath = "/data" + "/data/com.google.android.gms/shared_prefs/com.google.android.gms.update.storage.xml"
 
         if(Shell.su("[ -f $filePath ]").exec().isSuccess) {
-
             val file = File(filesDir, "update.xml")
             Shell.su(
                 "cp -af $filePath ${file.absolutePath}",
@@ -47,27 +81,16 @@ class MainActivity : AppCompatActivity() {
             ).exec()
             val result = parseXML(file.reader())
             if (result != null) {
-                Log.d("update-url", result)
-                binding.include.check.visibility = View.GONE
-                linkTextView.setTextIsSelectable(true)
-                linkTextView.text = String.format("%s", result)
-                //hintText.text = String.format("%s", resources.getString(R.string.hint))
-            } else {
-                val intent = Intent(Intent.ACTION_MAIN)
-                intent.setClassName("com.google.android.gms","com.google.android.gms.update.SystemUpdateActivity")
-                if (isCallable(intent)) {
-                    binding.include.check.apply {
-                        visibility = View.VISIBLE
-                        setOnClickListener {
-                            startActivity(intent)
-                        }
-                    }
-                }
-                else binding.include.check.visibility = View.GONE
-
-                linkTextView.text = String.format("%s", getString(R.string.no_update_available))
+                postLink(result)
             }
         }
+    }
+
+    private fun postLink(url: String) {
+        Log.d("update-url", url)
+        binding.include.check.visibility = View.GONE
+        binding.include.link.setTextIsSelectable(true)
+        binding.include.link.text = url
     }
 
     private fun isCallable(intent: Intent): Boolean {
