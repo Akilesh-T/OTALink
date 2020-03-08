@@ -11,6 +11,7 @@ import android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
+import app.akilesh.ota.R
 import app.akilesh.ota.databinding.ActivityMainBinding
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
@@ -41,16 +42,21 @@ class MainActivity : AppCompatActivity() {
         val updateIntent = Intent(Intent.ACTION_MAIN)
         updateIntent.setClassName("com.google.android.gms","com.google.android.gms.update.SystemUpdateActivity")
         if (isCallable(updateIntent)) {
-            binding.include.check.setOnClickListener {
+            binding.includeUpdateLink.check.setOnClickListener {
                 startActivity(updateIntent)
             }
         }
-        else binding.include.check.visibility = View.GONE
+        else binding.includeUpdateLink.check.visibility = View.GONE
 
         val isRoot = intent.getBooleanExtra("$packageName.isRoot", false)
         Log.d("isRoot", isRoot.toString())
-        if (isRoot) readFromGMS()
-        else readFromLogcat()
+        if (isRoot) {
+            binding.includeMessage.howToMessage.text = getString(R.string.reading_gms)
+            readFromGMS()
+        } else {
+            binding.includeMessage.howToMessage.text = getString(R.string.reading_logcat)
+            readFromLogcat()
+        }
 
     }
 
@@ -72,9 +78,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun readFromGMS() {
         val filePath = "/data" + "/data/com.google.android.gms/shared_prefs/com.google.android.gms.update.storage.xml"
+        val file = File(filesDir, "update.xml")
 
         if(Shell.su("[ -f $filePath ]").exec().isSuccess) {
-            val file = File(filesDir, "update.xml")
             Shell.su(
                 "cp -af $filePath ${file.absolutePath}",
                 "chmod 664 ${file.absolutePath}"
@@ -83,14 +89,18 @@ class MainActivity : AppCompatActivity() {
             if (result != null) {
                 postLink(result)
             }
+            file.delete()
         }
     }
 
     private fun postLink(url: String) {
         Log.d("update-url", url)
-        binding.include.check.visibility = View.GONE
-        binding.include.link.setTextIsSelectable(true)
-        binding.include.link.text = url
+        binding.includeUpdateLink.check.visibility = View.GONE
+        binding.includeUpdateLink.link.setTextIsSelectable(true)
+        binding.includeUpdateLink.link.text = url
+        val hint = getString(R.string.hint)
+        if (!binding.includeMessage.howToMessage.text.contains(hint))
+            binding.includeMessage.howToMessage.append(hint)
     }
 
     private fun isCallable(intent: Intent): Boolean {

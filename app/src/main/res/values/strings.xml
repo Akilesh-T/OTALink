@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">OTA Link</string>
     <string name="ota_update_url">OTA Update Link</string>
-    <string name="hint">Long press the link for more actions like copy, share etc.</string>
+    <string name="hint">\n\n3. Long press the link for quick actions like copy, share etc.</string>
     <string name="exit">Exit</string>
     <string name="no_root_access_title">Unable to get root access</string>
     <string name="check">Check for update</string>
@@ -10,4 +10,10 @@
         \n\n%2$s</string>
     <string name="copy_command">Copy command</string>
     <string name="command_copied">command copied</string>
+    <string name="how_to">Note</string>
+    <string name="reading_logcat">1. When an update is available, open the app. The link will be displayed shortly(takes few seconds).
+        \n\n2. If an update is available but the link is not displayed, clear data of Google Play Services and repeat 1.
+    </string>
+    <string name="reading_gms">1. When an update is available, open the app and the link should be displayed.
+    \n\n2. The url is read from GMS and not logcat. Hence the link will be displayed until GMS has the link.</string>
 </resources>

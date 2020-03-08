@@ -68,6 +68,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/check"
                         android:padding="8dp"
                         android:text="@string/no_update_available"
+                        style="@style/TextAppearance.MaterialComponents.Body2"
                         />
 
                 <com.google.android.material.button.MaterialButton

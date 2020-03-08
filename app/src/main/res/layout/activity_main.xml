@@ -8,12 +8,22 @@
         tools:context=".ui.MainActivity">
 
     <include
-            android:id="@+id/include"
+            android:id="@+id/include_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="12dp"
+            layout="@layout/include_message" />
+
+    <include
+            android:id="@+id/include_update_link"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/include_message"
             android:layout_margin="12dp"
             layout="@layout/include_update_link" />
 
