@@ -11,7 +11,7 @@
     <string name="copy_command">Copy command</string>
     <string name="command_copied">command copied</string>
     <string name="how_to">Note</string>
-    <string name="reading_logcat">1. When an update is available, open the app. The link will be displayed shortly(takes few seconds).
+    <string name="reading_logcat">1. When an update is available, open the app. The link will be displayed within few seconds.
         \n\n2. If an update is available but the link is not displayed, clear data of Google Play Services and repeat 1.
     </string>
     <string name="reading_gms">1. When an update is available, open the app and the link should be displayed.

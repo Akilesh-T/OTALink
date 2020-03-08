@@ -78,9 +78,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun readFromGMS() {
         val filePath = "/data" + "/data/com.google.android.gms/shared_prefs/com.google.android.gms.update.storage.xml"
-        val file = File(filesDir, "update.xml")
 
         if(Shell.su("[ -f $filePath ]").exec().isSuccess) {
+            val file = File(filesDir, "update.xml")
             Shell.su(
                 "cp -af $filePath ${file.absolutePath}",
                 "chmod 664 ${file.absolutePath}"
