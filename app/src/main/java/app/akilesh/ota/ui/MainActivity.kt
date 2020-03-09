@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -23,6 +24,7 @@ import java.io.InputStreamReader
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var updateIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val updateIntent = Intent(Intent.ACTION_MAIN)
+        updateIntent = Intent(Intent.ACTION_MAIN)
         updateIntent.setClassName("com.google.android.gms","com.google.android.gms.update.SystemUpdateActivity")
         if (isCallable(updateIntent)) {
             binding.includeUpdateLink.check.setOnClickListener {
@@ -51,9 +53,11 @@ class MainActivity : AppCompatActivity() {
         val isRoot = intent.getBooleanExtra("$packageName.isRoot", false)
         Log.d("isRoot", isRoot.toString())
         if (isRoot) {
+            binding.includeUpdateLink.progressHorizontal.visibility = View.GONE
             binding.includeMessage.howToMessage.text = getString(R.string.reading_gms)
             readFromGMS()
         } else {
+            binding.includeUpdateLink.check.visibility = View.GONE
             binding.includeMessage.howToMessage.text = getString(R.string.reading_logcat)
             readFromLogcat()
         }
@@ -62,17 +66,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun readFromLogcat() {
         val shell = Shell.newInstance()
+        val timer = object: CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+            override fun onFinish() {
+                shell.close()
+                binding.includeUpdateLink.progressHorizontal.visibility = View.GONE
+                binding.includeUpdateLink.link.text = getString(R.string.no_update_available)
+                if (isCallable(updateIntent)) binding.includeUpdateLink.check.visibility = View.VISIBLE
+            }
+        }
         val callbackList =
             object : CallbackList<String>() {
                 @MainThread
                 override fun onAddElement(log: String) {
                     val result = Patterns.WEB_URL.toRegex().find(log)
                     if (result != null && result.value.contains("packages/ota-api")) {
-                        postLink(result.value)
+                        binding.includeUpdateLink.progressHorizontal.visibility = View.GONE
+                        postLink(result.value, "logcat")
                         shell.close()
                     }
                 }
             }
+        timer.start()
         shell.newJob().add("logcat").to(callbackList).submit()
     }
 
@@ -87,15 +102,16 @@ class MainActivity : AppCompatActivity() {
             ).exec()
             val result = parseXML(file.reader())
             if (result != null) {
-                postLink(result)
+                binding.includeUpdateLink.check.visibility = View.GONE
+                postLink(result, "gms")
             }
+            else binding.includeUpdateLink.link.text = getString(R.string.no_update_available)
             file.delete()
         }
     }
 
-    private fun postLink(url: String) {
-        Log.d("update-url", url)
-        binding.includeUpdateLink.check.visibility = View.GONE
+    private fun postLink(url: String, from: String) {
+        Log.d("$from-update-url", url)
         binding.includeUpdateLink.link.setTextIsSelectable(true)
         binding.includeUpdateLink.link.text = url
         val hint = getString(R.string.hint)

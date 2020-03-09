@@ -58,6 +58,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
 
+                <ProgressBar
+                        android:id="@+id/progress_horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:indeterminate="true"
+                        />
+
                 <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/link"
                         android:layout_width="0dp"
@@ -67,7 +78,6 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/check"
                         android:padding="8dp"
-                        android:text="@string/no_update_available"
                         style="@style/TextAppearance.MaterialComponents.Body2"
                         />
 
