@@ -11,7 +11,8 @@
     <string name="copy_command">Copy command</string>
     <string name="command_copied">command copied</string>
     <string name="how_to">Note</string>
-    <string name="reading_logcat">1. When an update is available, open the app. The link will be displayed within few seconds.
+    <string name="reading_logcat">1. When an OTA update notification is displayed, do not download the update just yet, instead open the app.
+        Now, go to the system update window and start downloading the update. After a few seconds, return to the app. The link will be displayed, if found.
         \n\n2. If an update is available but the link is not displayed, clear data of Google Play Services and repeat 1.
     </string>
     <string name="reading_gms">1. When an update is available, open the app and the link should be displayed.
